@@ -1,0 +1,98 @@
+.InvitorDialog {
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  background-color: #00000080;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  z-index: 1000;
+  font-size: 14px;
+}
+
+.InvitorDialog .Content {
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  width: auto;
+  height: auto;
+}
+
+.InvitorDialog .ContentWidth {
+  min-width: 90vw;
+}
+
+@media screen and (min-width: 1081px) {
+  .InvitorDialog .ContentWidth {
+    min-width: 50vw;
+  }
+}
+
+.InvitorDialog .Title {
+  margin-bottom: 20px;
+  font-size: 16px;
+}
+
+.InvitorDialog .PriceContainer {
+  display: flex;
+  align-items: center;
+}
+
+.InvitorDialog .Price {
+  height: 44px;
+  background: #F0FAFF;
+  border-radius: 8px;
+  width: 100%;
+  border: none;
+  outline: none;
+  align-items: center;
+  justify-content: center;
+  padding-left: 8px;
+  padding-right: 8px;
+  text-align: center;
+  display: flex;
+  font-size: 12px;
+}
+
+.InvitorDialog .Buttons {
+  margin-top: 30px;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.InvitorDialog .Button {
+  padding: 10px 20px;
+  height: auto;
+  letter-spacing: 0px;
+  flex: 1;
+}
+
+.InvitorDialog .Cancel {
+  margin-right: 10px;
+  border: solid 1px #32D9E3;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+}
+
+.InvitorDialog .Confirm {
+  margin-left: 10px;
+  background: #32D9E3;
+  border-radius: 8px;
+  color: #FFFFFF;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: solid 1px #32D9E3;
+}

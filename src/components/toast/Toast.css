@@ -1,0 +1,18 @@
+.Toast {
+  text-align: center;
+  height: auto;
+  position: fixed;
+  left: 10%;
+  right: 10%;
+  top: 0;
+  z-index: 10000;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  background-color: #000000C0;
+  color: #FF5000;
+  padding: 20px;
+  border-radius: 12px;
+  font-size: 14px;
+  overflow-wrap: break-word;
+}

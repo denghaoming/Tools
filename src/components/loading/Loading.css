@@ -1,0 +1,40 @@
+.Loading {
+  text-align: center;
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  background-color: #333333E0;
+  display: flex;
+  align-items:center;
+  justify-content:center;
+  flex-direction: column;
+  z-index: 2000;
+  color: #DDDDDD;
+}
+
+.Loading-logo {
+  /* height: 40vmin; */
+  width: 60px;
+  height: 60px;
+  margin-bottom: 20px;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .Loading-logo {
+    animation: Loading-logo-spin infinite 1s linear;
+  }
+}
+
+@keyframes Loading-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
