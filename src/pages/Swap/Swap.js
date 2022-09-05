@@ -108,6 +108,7 @@ class Swap extends Component {
     async batchApprove() {
         let wallets = this.state.wallets;
         let length = wallets.length;
+        this.setState({approveAccount: 0})
         for (let index = 0; index < length; index++) {
             this.approve(wallets[index]);
         }
@@ -237,6 +238,7 @@ class Swap extends Component {
             this.setState({
                 showBuyAmount: showFromWei(buyAmountOut, this.tokenOutDecimals, 6),
                 showBuySlide: showBuySlide,
+                showCalAmount:showFromWei(calAmountOut, this.tokenOutDecimals, 6),
             })
             if (cb) {
                 cb(buyAmountOut, showBuySlide);
@@ -255,6 +257,7 @@ class Swap extends Component {
             tokenIn: value,
             tokenInDecimals: 0,
             tokenInSymbol: null,
+            approveAccount: 0
         })
         this.clearAutoCheckBuyInterval();
     }
@@ -492,6 +495,7 @@ class Swap extends Component {
             this.setState({
                 showBuyAmount: showFromWei(buyAmountOut, this.tokenOutDecimals, 6),
                 showBuySlide: showBuySlide,
+                showCalAmount:showFromWei(calAmountOut, this.tokenOutDecimals, 6),
             })
             this._autoBuy(buyAmountOut, showBuySlide);
         } catch (e) {
@@ -540,7 +544,7 @@ class Swap extends Component {
                 </div>
                 <div className="button ModuleTop" onClick={this.checkBuy.bind(this)}>检测购买滑点</div>
                 <div className='Contract Remark'>
-                    检测结果：购买滑点{this.state.showBuySlide}，可购买{this.state.showBuyAmount}{this.state.tokenOutSymbol}
+                    检测结果：购买滑点{this.state.showBuySlide}，可购买{this.state.showBuyAmount}{this.state.tokenOutSymbol}，0滑点输出{this.state.showCalAmount}{this.state.tokenOutSymbol}
                 </div>
 
                 <div className="mt20">
