@@ -11,16 +11,23 @@ class WalletState {
     config = {
         //Heco
         // Token: "0x7AC046d8F88D2F322034B3c75f87c767E618A7D3",
-        // MultiSend:"0xeEA1dcbF5Ea34a09541fd1Ad1d4dDA00Cd6be6b8",
-        // Invitor:"0xC44F16045D94049284FE4E27ec8D46Ea4bE26560",
-        // RPC:'https://http-mainnet.hecochain.com/',
-        // CHAIN_ID:128,
+        // MultiSend: "0xeEA1dcbF5Ea34a09541fd1Ad1d4dDA00Cd6be6b8",
+        // Invitor: "0xC44F16045D94049284FE4E27ec8D46Ea4bE26560",
+        // RPC: 'https://http-mainnet.hecochain.com/',
+        // CHAIN_ID: 128,
+        // SwapCheck: "0x1BeB472Cc1ddc5Dae1bB2Ddd38A101A2fad3584c",
+        // USDT:'0xa22b5A5118c1d05d0D4c8f1B808DBa22ee17dD8E',
+        // SwapRouter:"0xBe4AB2603140F134869cb32aB4BC56d762Ae900B",
         //BSC
         Token: "0x8333a84f6905bF66A591572bF220A8dBe45606eC",
         MultiSend:"0xdf73469E83c2001104D4FF96BDA594C74271EB34",
         Invitor:"0xa3E4bf0eBAC1f1BB462F990f12420655348822bc",
         RPC:'https://bsc-dataseed1.ninicoin.io/',
         CHAIN_ID:56,
+        USDT:'0x55d398326f99059fF775485246999027B3197955',
+        SwapRouter:"0x10ED43C718714eb63d5aA57B78B54704E256024E",
+        SwapCheck: "0xe21AFca4174F5b2fc8FBFC5BD06164805bE93717",
+        
     }
 
     listeners = []

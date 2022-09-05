@@ -9,6 +9,7 @@ import CreateWallet from './pages/createwallet/CreateWallet'
 import MultiSend from './pages/MultiSend/MultiSend'
 import Tabs from './Tabs'
 import More from './pages/More/More'
+import Swap from './pages/Swap/Swap'
 
 class App extends Component {
     state = { account: null, chainId: null, shortAccount: null }
@@ -78,6 +79,7 @@ class App extends Component {
                             <Route path="/createWallets" exact element={<CreateWallet />}></Route>
                             <Route path="/more" exact element={<More />}></Route>
                             <Route path="/multiSend" exact element={<MultiSend />}></Route>
+                            <Route path="/swap" exact element={<Swap />}></Route>
                         </Routes>
                     </div>
                     <Tabs></Tabs>

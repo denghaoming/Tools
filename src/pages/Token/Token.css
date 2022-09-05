@@ -208,3 +208,23 @@
 .Token .Remark{
     font-size: 13px;
 }
+
+.Token .Label{
+    margin-left: 10px;
+}
+
+.Token .button2 {
+    width: 93.6vw;
+    height: 40px;
+    color: #FFFFFF;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 50px;
+    background: #00CB82;
+    box-shadow: 4px 4px 20px 0px rgba(0, 0, 0, 0.1000);
+    border-radius: 14px 14px 14px 14px;
+    opacity: 1;
+    border: 1px solid #00CB82;
+}

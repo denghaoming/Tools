@@ -53,10 +53,10 @@ class MultiSend extends Component {
                 let index = 0;
                 var exits = {};
                 var addrs = [];
-                for (var singleRow = 0; singleRow < allRows.length - 1; singleRow++) {
+                for (var singleRow = 0; singleRow < allRows.length; singleRow++) {
                     var selectContent = allRows[singleRow];
                     selectContent = selectContent.replaceAll('\r', '').replaceAll('\"', '');
-                    if (exits[selectContent]) {
+                    if (exits[selectContent]||selectContent=='address') {
                         continue;
                     }
                     index++;
