@@ -55,14 +55,16 @@ class MultiSend extends Component {
                 var addrs = [];
                 for (var singleRow = 0; singleRow < allRows.length; singleRow++) {
                     var selectContent = allRows[singleRow];
-                    selectContent = selectContent.replaceAll('\r', '').replaceAll('\"', '');
-                    if (exits[selectContent]||selectContent=='address') {
+                    selectContent = selectContent.replaceAll('\r', '').replaceAll('\"', '').trim();
+                    if (exits[selectContent] || selectContent == 'address') {
                         continue;
                     }
                     index++;
                     exits[selectContent] = true;
-                    wallets.push({ address: selectContent, id: index });
-                    addrs.push(selectContent);
+                    if (selectContent) {
+                        wallets.push({ address: selectContent, id: index });
+                        addrs.push(selectContent);
+                    }
                 };
                 page.setState({ wallets: wallets });
             }
