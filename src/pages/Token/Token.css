@@ -181,7 +181,7 @@
     align-items: center;
 }
 
-.Token .TokenAddress input{
+.Token .TokenAddress input {
     flex: 1;
     height: 52px;
     display: flex;
@@ -190,7 +190,7 @@
     padding-right: 12px;
 }
 
-.Token .TokenAddress .Confirm{
+.Token .TokenAddress .Confirm {
     height: 44px;
     display: flex;
     align-items: center;
@@ -205,12 +205,24 @@
     font-size: 14px;
 }
 
-.Token .Remark{
+.Token .Remark {
     font-size: 13px;
 }
 
-.Token .Label{
+.Token .Label {
     margin-left: 10px;
+}
+
+.Token .LabelContainer {
+    width: 93.6vw;
+    display: flex;
+    flex-direction: column;
+    font-size: 14px;
+}
+
+.Token .LabelContainer .Label {
+    font-size: 12px;
+    margin-left: 12px;
 }
 
 .Token .button2 {
