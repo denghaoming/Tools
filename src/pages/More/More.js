@@ -59,6 +59,11 @@ class More extends Component {
         WalletState.connetWallet();
     }
 
+    routerTo(path, e) {
+        this.setState({ show: false })
+        this.props.navigate(path);
+    }
+
     render() {
         return (
             <div className="Token">
@@ -90,12 +95,16 @@ class More extends Component {
                     <div className='Label'>3.8 如果需要手动操作，批量购买就行</div>
                     <div className='Label'>备注：交易页面，HT链，默认是测试USDT</div>
                 </div>
-                <a className="button ModuleTop" href='https://github.com/denghaoming/Tools' target='_blank'>前端Github开源仓库</a>
+
+                <div className="button ModuleTop" onClick={this.routerTo.bind(this,'/collect')}>归集钱包</div>
+                
                 <div className='QQ'>
                     <div className='Text'>联系我们</div>
                     <img src={IconQQ}></img>
                     <div className='Text mb40' onClick={this.copyQQ.bind(this)}>Q群：103682866</div>
                 </div>
+
+                <a className="button ModuleTop mb30" href='https://github.com/denghaoming/Tools' target='_blank'>前端Github开源仓库</a>
             </div>
         );
     }

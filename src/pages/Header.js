@@ -3,6 +3,7 @@ import WalletState from '../state/WalletState';
 import IconLink from "../images/IconLink.png"
 import { withNavigation } from '../hocs'
 import { showAccount } from '../utils';
+import logo from "../images/logo.png"
 
 class Header extends Component {
 
@@ -63,11 +64,15 @@ class Header extends Component {
 
     }
 
+    routerTo() {
+        this.props.navigate("/");
+    }
+
     render() {
         return (
             <div className="Header">
-                <div className='menu'>
-                    
+                <div className='menu' onClick={this.routerTo.bind(this)}>
+                    <img src={logo}></img>
                 </div>
                 <div className='HTitle flex center'></div>
                 <div className='account'>

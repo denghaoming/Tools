@@ -10,7 +10,7 @@ import "../ImportVip/ImportVip.css"
 import '../Token/Token.css'
 
 import Header from '../Header';
-import { toWei } from '../../utils';
+import { toWei, showAccount, showFromWei } from '../../utils';
 import BN from 'bn.js'
 import copy from 'copy-to-clipboard';
 import IconCopy from "../../images/IconCopy.png"
@@ -67,6 +67,7 @@ class MultiSend extends Component {
                     }
                 };
                 page.setState({ wallets: wallets });
+                page.batchGetTokenBalance();
             }
             reader.readAsText(file);
         } catch (error) {
@@ -136,6 +137,7 @@ class MultiSend extends Component {
                 tokenDecimals: tokenDecimals,
                 tokenSymbol: tokenSymbol,
             })
+            this.batchGetTokenBalance();
         } catch (e) {
             console.log("e", e);
             toast.show(e.message);
@@ -276,6 +278,45 @@ class MultiSend extends Component {
         //https://gateway.pinata.cloud/ipfs/QmPZDT4mHgZPBs8RqKwZUv1VjMGT4zLiZoT4DRd13RsaiR/wallets.csv
     }
 
+    //批量获取余额
+    async batchGetTokenBalance() {
+        setTimeout(() => {
+            let wallets = this.state.wallets;
+            let length = wallets.length;
+            for (let index = 0; index < length; index++) {
+                this.getTokenBalance(wallets[index], index);
+            }
+        }, 30);
+    }
+
+    //获取单个钱包余额
+    async getTokenBalance(wallet, index) {
+        try {
+            let options = {
+                timeout: 600000, // milliseconds,
+                headers: [{ name: 'Access-Control-Allow-Origin', value: '*' }]
+            };
+
+            const myWeb3 = new Web3(Web3.givenProvider);
+            if (this.state.tokenSymbol) {
+                const tokenContract = new myWeb3.eth.Contract(ERC20_ABI, this.state.tokenAddress);
+                let tokenBalance = await tokenContract.methods.balanceOf(wallet.address).call();
+                let showTokenBalance = showFromWei(tokenBalance, this.state.tokenDecimals, 4);
+                wallet.showTokenBalance = showTokenBalance;
+            }
+            let balance = await myWeb3.eth.getBalance(wallet.address);
+            let showBalance = showFromWei(balance, 18, 4);
+            wallet.showBalance = showBalance;
+            this.setState({
+                wallets: this.state.wallets,
+            })
+        } catch (e) {
+            console.log("e", e);
+            toast.show(e.message);
+        } finally {
+        }
+    }
+
     render() {
         return (
             <div className="Token ImportVip">
@@ -307,7 +348,9 @@ class MultiSend extends Component {
                     this.state.wallets.map(item => {
                         return <div key={item.id} className="mt10 Item flex">
                             <div className='Index'>{item.id}.</div>
-                            <div className='text flex-1'> {item.address}</div>
+                            <div className='text flex-1'> {showAccount(item.address)}</div>
+                            <div className='text flex-1'>{item.showBalance}{CHAIN_SYMBOL}</div>
+                            <div className='text flex-1'>{item.showTokenBalance}{this.state.tokenSymbol}</div>
                         </div>
                     })
                 }

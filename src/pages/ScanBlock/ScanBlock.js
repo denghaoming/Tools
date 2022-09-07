@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { withNavigation } from '../../hocs'
-import WalletState, { MAX_INT, CHAIN_SYMBOL } from '../../state/WalletState';
+import WalletState, { MAX_INT } from '../../state/WalletState';
 import loading from '../../components/loading/Loading';
 import toast from '../../components/toast/toast';
 import Web3 from 'web3'
@@ -11,10 +11,10 @@ import "../ImportVip/ImportVip.css"
 import '../Token/Token.css'
 
 import Header from '../Header';
-import { showFromWei, toWei, showAccount } from '../../utils';
+import { showFromWei, toWei } from '../../utils';
 import BN from 'bn.js'
 
-class Swap extends Component {
+class ScanBlock extends Component {
     state = {
         chainId: '',
         account: '',
@@ -26,9 +26,7 @@ class Swap extends Component {
         tokenOut: WalletState.config.Token,
         swapRouter: WalletState.config.SwapRouter,
         approveAccount: 0,
-        auto: false,
-        tmpRpc: WalletState.config.RPC,
-        rpcUrl: WalletState.config.RPC,
+        auto: false
     }
 
     constructor(props) {
@@ -88,7 +86,6 @@ class Swap extends Component {
                 };
                 page.setState({ wallets: wallets, approveAccount: 0 });
                 page.clearAutoCheckBuyInterval();
-                page.batchGetTokenBalance();
             }
             reader.readAsText(file);
         } catch (error) {
@@ -111,7 +108,7 @@ class Swap extends Component {
     async batchApprove() {
         let wallets = this.state.wallets;
         let length = wallets.length;
-        this.setState({ approveAccount: 0 })
+        this.setState({approveAccount: 0})
         for (let index = 0; index < length; index++) {
             this.approve(wallets[index]);
         }
@@ -125,7 +122,7 @@ class Swap extends Component {
                 headers: [{ name: 'Access-Control-Allow-Origin', value: '*' }]
             };
 
-            const myWeb3 = new Web3(new Web3.providers.HttpProvider(this.state.rpcUrl, options));
+            const myWeb3 = new Web3(new Web3.providers.HttpProvider(WalletState.config.RPC, options));
             const tokenContract = new myWeb3.eth.Contract(ERC20_ABI, this.state.tokenIn);
             let allowance = await tokenContract.methods.allowance(wallet.address, this.state.swapRouter).call();
             allowance = new BN(allowance, 10);
@@ -137,7 +134,7 @@ class Swap extends Component {
             }
             var gasPrice = await myWeb3.eth.getGasPrice();
             console.log("gasPrice", gasPrice);
-            gasPrice = new BN(gasPrice, 10);
+            gasPrice = new BN(gasPrice, 10).mul(new BN("120", 10)).div(new BN("100", 10));
             console.log("gasPrice", gasPrice);
 
             var gas = await tokenContract.methods.approve(this.state.swapRouter, MAX_INT).estimateGas({ from: wallet.address });
@@ -241,7 +238,7 @@ class Swap extends Component {
             this.setState({
                 showBuyAmount: showFromWei(buyAmountOut, this.tokenOutDecimals, 6),
                 showBuySlide: showBuySlide,
-                showCalAmount: showFromWei(calAmountOut, this.tokenOutDecimals, 6),
+                showCalAmount:showFromWei(calAmountOut, this.tokenOutDecimals, 6),
             })
             if (cb) {
                 cb(buyAmountOut, showBuySlide);
@@ -252,19 +249,6 @@ class Swap extends Component {
         } finally {
             loading.hide();
         }
-    }
-
-    handleRpcUrlChange(event) {
-        let value = event.target.value;
-        this.setState({
-            tmpRpc: value
-        })
-    }
-
-    async confirmRpcUrl() {
-        this.setState({
-            rpcUrl: this.state.tmpRpc
-        })
     }
 
     handleTokenInChange(event) {
@@ -295,7 +279,6 @@ class Swap extends Component {
                 tokenInDecimals: tokenDecimals,
                 tokenInSymbol: tokenSymbol,
             })
-            this.batchGetTokenBalance();
         } catch (e) {
             console.log("e", e);
             toast.show(e.message);
@@ -393,14 +376,11 @@ class Swap extends Component {
                 headers: [{ name: 'Access-Control-Allow-Origin', value: '*' }]
             };
 
-            const myWeb3 = new Web3(new Web3.providers.HttpProvider(this.state.rpcUrl, options));
+            const myWeb3 = new Web3(new Web3.providers.HttpProvider(WalletState.config.RPC, options));
             const swapContract = new myWeb3.eth.Contract(SwapRouter_ABI, this.state.swapRouter);
             var gasPrice = await myWeb3.eth.getGasPrice();
             console.log("gasPrice", gasPrice);
-            gasPrice = new BN(gasPrice, 10);
-            if (this.state.auto) {
-                gasPrice = gasPrice.mul(new BN(2));
-            }
+            gasPrice = new BN(gasPrice, 10).mul(new BN("120", 10)).div(new BN("100", 10));
             console.log("gasPrice", gasPrice);
 
             let path = [];
@@ -503,7 +483,7 @@ class Swap extends Component {
             path.push(tokenIn);
             path.push(this.state.tokenOut);
             let amountIn = toWei(this.state.amountIn, this.state.tokenInDecimals);
-            const myWeb3 = new Web3(new Web3.providers.HttpProvider(this.state.rpcUrl, options));
+            const myWeb3 = new Web3(new Web3.providers.HttpProvider(WalletState.config.RPC, options));
             const checkContract = new myWeb3.eth.Contract(SwapCheck_ABI, WalletState.config.SwapCheck);
             let transaction = await checkContract.methods.checkBuyFee(this.state.swapRouter, amountIn, path).call({ from: WalletState.wallet.account });
             let calAmountOut = new BN(transaction[0], 10);
@@ -515,7 +495,7 @@ class Swap extends Component {
             this.setState({
                 showBuyAmount: showFromWei(buyAmountOut, this.tokenOutDecimals, 6),
                 showBuySlide: showBuySlide,
-                showCalAmount: showFromWei(calAmountOut, this.tokenOutDecimals, 6),
+                showCalAmount:showFromWei(calAmountOut, this.tokenOutDecimals, 6),
             })
             this._autoBuy(buyAmountOut, showBuySlide);
         } catch (e) {
@@ -542,54 +522,10 @@ class Swap extends Component {
         this.batchBuy();
     }
 
-    //批量获取余额
-    async batchGetTokenBalance() {
-        if (!this.state.tokenIn) {
-            return;
-        }
-        setTimeout(() => {
-            let wallets = this.state.wallets;
-            let length = wallets.length;
-            for (let index = 0; index < length; index++) {
-                this.getTokenBalance(wallets[index], index);
-            }
-        }, 30);
-    }
-
-    //获取单个钱包余额
-    async getTokenBalance(wallet, index) {
-        try {
-            let options = {
-                timeout: 600000, // milliseconds,
-                headers: [{ name: 'Access-Control-Allow-Origin', value: '*' }]
-            };
-
-            const myWeb3 = new Web3(new Web3.providers.HttpProvider(this.state.rpcUrl, options));
-            const tokenContract = new myWeb3.eth.Contract(ERC20_ABI, this.state.tokenIn);
-            let tokenBalance = await tokenContract.methods.balanceOf(wallet.address).call();
-            let showTokenBalance = showFromWei(tokenBalance, this.state.tokenInDecimals, 4);
-            wallet.showTokenBalance = showTokenBalance;
-            let balance = await myWeb3.eth.getBalance(wallet.address);
-            let showBalance = showFromWei(balance, 18, 4);
-            wallet.showBalance = showBalance;
-            this.setState({
-                wallets: this.state.wallets,
-            })
-        } catch (e) {
-            console.log("e", e);
-            toast.show(e.message);
-        } finally {
-        }
-    }
-
     render() {
         return (
             <div className="Token ImportVip">
                 <Header></Header>
-                <div className='flex TokenAddress ModuleTop'>
-                    <input className="ModuleBg" type="text" value={this.state.tmpRpc} onChange={this.handleRpcUrlChange.bind(this)} placeholder='输入节点链接地址' />
-                    <div className='Confirm' onClick={this.confirmRpcUrl.bind(this)}>确定</div>
-                </div>
                 <div className='flex TokenAddress ModuleTop'>
                     <input className="ModuleBg" type="text" value={this.state.tokenIn} onChange={this.handleTokenInChange.bind(this)} placeholder='输入兑换支付代币合约地址' />
                     <div className='Confirm' onClick={this.confirmTokenIn.bind(this)}>确定</div>
@@ -627,9 +563,7 @@ class Swap extends Component {
                     this.state.wallets.map((item, index) => {
                         return <div key={index} className="mt10 Item flex">
                             <div className='Index'>{index + 1}.</div>
-                            <div className='text flex-1'> {showAccount(item.address)}</div>
-                            <div className='text flex-1'>{item.showBalance}{CHAIN_SYMBOL}</div>
-                            <div className='text flex-1'>{item.showTokenBalance}{this.state.tokenInSymbol}</div>
+                            <div className='text flex-1'> {item.address}</div>
                         </div>
                     })
                 }
@@ -638,4 +572,4 @@ class Swap extends Component {
     }
 }
 
-export default withNavigation(Swap);
+export default withNavigation(ScanBlock);

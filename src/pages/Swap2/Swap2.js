@@ -5,7 +5,7 @@ import loading from '../../components/loading/Loading';
 import toast from '../../components/toast/toast';
 import Web3 from 'web3'
 import { ERC20_ABI } from '../../abi/erc20';
-import { SwapCheck_ABI } from '../../abi/SwapCheck_ABI';
+import { SwapCheck2_ABI } from '../../abi/SwapCheck2_ABI';
 import { SwapRouter_ABI } from '../../abi/SwapRouter_ABI';
 import "../ImportVip/ImportVip.css"
 import '../Token/Token.css'
@@ -14,7 +14,8 @@ import Header from '../Header';
 import { showFromWei, toWei, showAccount } from '../../utils';
 import BN from 'bn.js'
 
-class Swap extends Component {
+
+class Swap2 extends Component {
     state = {
         chainId: '',
         account: '',
@@ -199,8 +200,8 @@ class Swap extends Component {
 
     async _checkBuy(cb) {
         let account = WalletState.wallet.account;
-        if (!this.state.amountIn) {
-            toast.show('请输入兑换支付代币数量');
+        if (!this.state.amountOut) {
+            toast.show('请输入兑换得到代币数量');
             return;
         }
         if (!this.state.tokenInSymbol) {
@@ -216,32 +217,32 @@ class Swap extends Component {
         path.push(tokenIn);
         path.push(this.state.tokenOut);
         loading.show();
-        let amountIn = toWei(this.state.amountIn, this.state.tokenInDecimals);
+        let amountOut = toWei(this.state.amountOut, this.state.tokenOutDecimals);
         try {
             const web3 = new Web3(Web3.givenProvider);
             const tokenInContract = new web3.eth.Contract(ERC20_ABI, tokenIn);
-            let allowance = await tokenInContract.methods.allowance(account, WalletState.config.SwapCheck).call();
+            let allowance = await tokenInContract.methods.allowance(account, WalletState.config.SwapCheck2).call();
             allowance = new BN(allowance, 10);
             if (allowance.isZero()) {
-                let transaction = await tokenInContract.methods.approve(WalletState.config.SwapCheck, MAX_INT).send({ from: account });
+                let transaction = await tokenInContract.methods.approve(WalletState.config.SwapCheck2, MAX_INT).send({ from: account });
                 if (!transaction.status) {
                     toast.show("授权失败");
                     return;
                 }
             }
 
-            const checkContract = new web3.eth.Contract(SwapCheck_ABI, WalletState.config.SwapCheck);
-            let transaction = await checkContract.methods.checkBuyFee(this.state.swapRouter, amountIn, path).call({ from: account });
-            let calAmountOut = new BN(transaction[0], 10);
+            const checkContract = new web3.eth.Contract(SwapCheck2_ABI, WalletState.config.SwapCheck2);
+            let transaction = await checkContract.methods.checkBuyFee2(this.state.swapRouter, amountOut, path).call({ from: account });
+            let calAmountIn = new BN(transaction[0], 10);
             let buyAmountOut = new BN(transaction[1], 10);
 
-            let buySlige = buyAmountOut.mul(new BN(10000)).div(calAmountOut);
+            let buySlige = buyAmountOut.mul(new BN(10000)).div(amountOut);
             let showBuySlide = (10000 - buySlige.toNumber()) / 100;
-            console.log(showFromWei(calAmountOut, this.tokenOutDecimals, 6));
+            console.log(showFromWei(calAmountIn, this.tokenInDecimals, 6));
             this.setState({
                 showBuyAmount: showFromWei(buyAmountOut, this.tokenOutDecimals, 6),
                 showBuySlide: showBuySlide,
-                showCalAmount: showFromWei(calAmountOut, this.tokenOutDecimals, 6),
+                showCalAmount: showFromWei(calAmountIn, this.tokenInDecimals, 6),
             })
             if (cb) {
                 cb(buyAmountOut, showBuySlide);
@@ -252,19 +253,6 @@ class Swap extends Component {
         } finally {
             loading.hide();
         }
-    }
-
-    handleRpcUrlChange(event) {
-        let value = event.target.value;
-        this.setState({
-            tmpRpc: value
-        })
-    }
-
-    async confirmRpcUrl() {
-        this.setState({
-            rpcUrl: this.state.tmpRpc
-        })
     }
 
     handleTokenInChange(event) {
@@ -410,16 +398,16 @@ class Swap extends Component {
             let amountIn = toWei(this.state.amountIn, this.state.tokenInDecimals);
             let amountOut = toWei(this.state.amountOut, this.state.tokenOutDecimals);
             //Data
-            var data = swapContract.methods.swapExactTokensForTokensSupportingFeeOnTransferTokens(
-                amountIn, amountOut, path, wallet.address, 1914823077
+            var data = swapContract.methods.swapTokensForExactTokens(
+                amountOut, amountIn, path, wallet.address, 1914823077
             ).encodeABI();
             console.log("data", data);
 
             var nonce = await myWeb3.eth.getTransactionCount(wallet.address, "pending");
             console.log("nonce", nonce);
 
-            var gas = await swapContract.methods.swapExactTokensForTokensSupportingFeeOnTransferTokens(
-                amountIn, amountOut, path, wallet.address, 1914823077
+            var gas = await swapContract.methods.swapTokensForExactTokens(
+                amountOut, amountIn, path, wallet.address, 1914823077
             ).estimateGas({ from: wallet.address });
             gas = new BN(gas, 10).mul(new BN("150", 10)).div(new BN("100", 10));
             console.log("gas", gas);
@@ -469,7 +457,7 @@ class Swap extends Component {
             return;
         }
         if (!this.state.amountIn) {
-            toast.show('请输入兑换支付代币数量');
+            toast.show('请输入兑换支付代币数量最大值');
             return;
         }
         if (!this.state.tokenOutSymbol) {
@@ -477,7 +465,7 @@ class Swap extends Component {
             return;
         }
         if (!this.state.amountOut) {
-            toast.show('请输入兑换最少得到代币数量');
+            toast.show('请输入兑换得到代币数量');
             return;
         }
         let wallets = this.state.wallets;
@@ -502,22 +490,22 @@ class Swap extends Component {
             let tokenIn = this.state.tokenIn;
             path.push(tokenIn);
             path.push(this.state.tokenOut);
-            let amountIn = toWei(this.state.amountIn, this.state.tokenInDecimals);
+            let amountOut = toWei(this.state.amountOut, this.state.tokenOutDecimals);
             const myWeb3 = new Web3(new Web3.providers.HttpProvider(this.state.rpcUrl, options));
-            const checkContract = new myWeb3.eth.Contract(SwapCheck_ABI, WalletState.config.SwapCheck);
-            let transaction = await checkContract.methods.checkBuyFee(this.state.swapRouter, amountIn, path).call({ from: WalletState.wallet.account });
-            let calAmountOut = new BN(transaction[0], 10);
+            const checkContract = new myWeb3.eth.Contract(SwapCheck2_ABI, WalletState.config.SwapCheck2);
+            let transaction = await checkContract.methods.checkBuyFee2(this.state.swapRouter, amountOut, path).call({ from: WalletState.wallet.account });
+            let calAmountIn = new BN(transaction[0], 10);
             let buyAmountOut = new BN(transaction[1], 10);
 
-            let buySlige = buyAmountOut.mul(new BN(10000)).div(calAmountOut);
+            let buySlige = buyAmountOut.mul(new BN(10000)).div(amountOut);
             let showBuySlide = (10000 - buySlige.toNumber()) / 100;
-            console.log(showFromWei(calAmountOut, this.tokenOutDecimals, 6));
+            console.log(showFromWei(calAmountIn, this.tokenInDecimals, 6));
             this.setState({
                 showBuyAmount: showFromWei(buyAmountOut, this.tokenOutDecimals, 6),
                 showBuySlide: showBuySlide,
-                showCalAmount: showFromWei(calAmountOut, this.tokenOutDecimals, 6),
+                showCalAmount: showFromWei(calAmountIn, this.tokenInDecimals, 6),
             })
-            this._autoBuy(buyAmountOut, showBuySlide);
+            this._autoBuy(calAmountIn, showBuySlide);
         } catch (e) {
             console.log("e", e);
             toast.show(e.message);
@@ -533,13 +521,26 @@ class Swap extends Component {
         }
     }
 
-    async _autoBuy(buyAmountOut, showBuySlide) {
-        if (showBuySlide > 30 || toWei(this.state.amountOut, this.state.tokenOutDecimals).gt(buyAmountOut)) {
+    async _autoBuy(calAmountIn, showBuySlide) {
+        if (showBuySlide > 30 || toWei(this.state.amountIn, this.state.tokenInDecimals).lt(calAmountIn)) {
             console.log('showBuySlide', showBuySlide)
             return;
         }
         this.clearAutoCheckBuyInterval();
         this.batchBuy();
+    }
+
+    handleRpcUrlChange(event) {
+        let value = event.target.value;
+        this.setState({
+            tmpRpc: value
+        })
+    }
+
+    async confirmRpcUrl() {
+        this.setState({
+            rpcUrl: this.state.tmpRpc
+        })
     }
 
     //批量获取余额
@@ -595,7 +596,7 @@ class Swap extends Component {
                     <div className='Confirm' onClick={this.confirmTokenIn.bind(this)}>确定</div>
                 </div>
                 <div className='flex TokenAddress ModuleTop'>
-                    <input className="ModuleBg" type="text" value={this.state.amountIn} onChange={this.handleAmountInChange.bind(this)} pattern="[0-9.]*" placeholder='输入兑换支付代币数量' />
+                    <input className="ModuleBg" type="text" value={this.state.amountIn} onChange={this.handleAmountInChange.bind(this)} pattern="[0-9.]*" placeholder='输入兑换支付代币数量最大值' />
                     <div className='Label'>{this.state.tokenInSymbol}</div>
                 </div>
                 <div className='flex TokenAddress ModuleTop'>
@@ -603,12 +604,12 @@ class Swap extends Component {
                     <div className='Confirm' onClick={this.confirmTokenOut.bind(this)}>确定</div>
                 </div>
                 <div className='flex TokenAddress ModuleTop'>
-                    <input className="ModuleBg" type="text" value={this.state.amountOut} onChange={this.handleAmountOutChange.bind(this)} pattern="[0-9.]*" placeholder='输入兑换最少得到代币数量' />
+                    <input className="ModuleBg" type="text" value={this.state.amountOut} onChange={this.handleAmountOutChange.bind(this)} pattern="[0-9.]*" placeholder='输入兑换得到代币数量' />
                     <div className='Label'>{this.state.tokenOutSymbol}</div>
                 </div>
                 <div className="button ModuleTop" onClick={this.checkBuy.bind(this)}>检测购买滑点</div>
                 <div className='Contract Remark'>
-                    检测结果：购买滑点{this.state.showBuySlide}，可购买{this.state.showBuyAmount}{this.state.tokenOutSymbol}，0滑点输出{this.state.showCalAmount}{this.state.tokenOutSymbol}
+                    检测结果：购买滑点{this.state.showBuySlide}，实际到账{this.state.showBuyAmount}{this.state.tokenOutSymbol}，需要支付{this.state.showCalAmount}{this.state.tokenInSymbol}
                 </div>
 
                 <div className="mt20">
@@ -638,4 +639,4 @@ class Swap extends Component {
     }
 }
 
-export default withNavigation(Swap);
+export default withNavigation(Swap2);

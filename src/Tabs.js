@@ -24,7 +24,7 @@ class Tabs extends Component {
     }
 
     setSelTab() {
-        let index = 0;
+        let index = 3;
         let pathname = window.location.pathname;
         if ('/swap' == pathname) {
             index = 1;
@@ -32,6 +32,10 @@ class Tabs extends Component {
             index = 2;
         } else if ('/more' == pathname) {
             index = 3;
+        } else if ('/swap2' == pathname) {
+            index = 4;
+        } else if ('/' == pathname) {
+            index = 0;
         }
         if (this.state.selectIndex == index) {
             return;
@@ -69,6 +73,9 @@ class Tabs extends Component {
                 </div>
                 <div className={this.getTabStyle(3)} onClick={this.routerTo.bind(this, '/more')}>
                     <div>更多</div>
+                </div>
+                <div className={this.getTabStyle(4)} onClick={this.routerTo.bind(this, '/swap2')}>
+                    <div>购买</div>
                 </div>
             </div>
         );

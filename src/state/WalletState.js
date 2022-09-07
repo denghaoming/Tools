@@ -18,15 +18,17 @@ class WalletState {
         // SwapCheck: "0x1BeB472Cc1ddc5Dae1bB2Ddd38A101A2fad3584c",
         // USDT:'0xa22b5A5118c1d05d0D4c8f1B808DBa22ee17dD8E',
         // SwapRouter:"0xBe4AB2603140F134869cb32aB4BC56d762Ae900B",
+        // SwapCheck2:"0xB4D8Ab17B5315D1B9c5af91aC06cdA2553aa8A8F",
         //BSC
         Token: "0x8333a84f6905bF66A591572bF220A8dBe45606eC",
         MultiSend:"0xdf73469E83c2001104D4FF96BDA594C74271EB34",
         Invitor:"0xa3E4bf0eBAC1f1BB462F990f12420655348822bc",
-        RPC:'https://bsc-dataseed1.ninicoin.io/',
+        RPC:'https://bsc-dataseed1.binance.org/',
         CHAIN_ID:56,
         USDT:'0x55d398326f99059fF775485246999027B3197955',
         SwapRouter:"0x10ED43C718714eb63d5aA57B78B54704E256024E",
         SwapCheck: "0xe21AFca4174F5b2fc8FBFC5BD06164805bE93717",
+        SwapCheck2:"0x3712B77abF2438BcB2BAc32A6B60D831bB8A1471",
     }
 
     listeners = []
