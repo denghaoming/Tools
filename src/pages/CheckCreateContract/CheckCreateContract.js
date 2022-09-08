@@ -71,6 +71,9 @@ class CheckCreateContract extends Component {
                     console.log("contractAddress", contractAddress);
                     wallets.push({ address: account.address, privateKey: account.privateKey });
                     address.push({ address: account.address });
+                    console.log('address',account.address);
+                    contractAddress = ethers.utils.getContractAddress({ from: account.address, nonce: 0 });
+                    console.log("contractAddress", contractAddress);
                     break;
                 }
             }
