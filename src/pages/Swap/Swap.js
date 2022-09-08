@@ -29,6 +29,7 @@ class Swap extends Component {
         auto: false,
         tmpRpc: WalletState.config.RPC,
         rpcUrl: WalletState.config.RPC,
+        gasMulti: 2,
     }
 
     constructor(props) {
@@ -357,7 +358,7 @@ class Swap extends Component {
         this.clearAutoCheckBuyInterval();
     }
 
-    async batchBuy() {
+    async batchBuy(auto, e) {
         if (!this.state.tokenInSymbol) {
             toast.show('请输入正确的兑换支付代币合约地址，并点击确定按钮获取代币信息');
             return;
@@ -381,11 +382,11 @@ class Swap extends Component {
             return;
         }
         for (let index = 0; index < length; index++) {
-            this.buy(wallets[index]);
+            this.buy(wallets[index], auto);
         }
     }
 
-    async buy(wallet) {
+    async buy(wallet, auto) {
         try {
             loading.show();
             let options = {
@@ -398,8 +399,14 @@ class Swap extends Component {
             var gasPrice = await myWeb3.eth.getGasPrice();
             console.log("gasPrice", gasPrice);
             gasPrice = new BN(gasPrice, 10);
-            if (this.state.auto) {
-                gasPrice = gasPrice.mul(new BN(2));
+            if (auto) {
+                let gasMulti = this.state.gasMulti;
+                if (!gasMulti) {
+                    gasMulti = 1;
+                }
+                gasMulti = parseFloat(gasMulti);
+                gasMulti = parseInt(gasMulti * 100);
+                gasPrice = gasPrice.mul(new BN(gasMulti)).div(new BN(100));
             }
             console.log("gasPrice", gasPrice);
 
@@ -492,7 +499,12 @@ class Swap extends Component {
         }, 1000);
     }
 
+    checking = false;
     async _autoCheckBuy() {
+        if (this.checking) {
+            return;
+        }
+        this.checking = true;
         try {
             let options = {
                 timeout: 600000, // milliseconds,
@@ -522,6 +534,7 @@ class Swap extends Component {
             console.log("e", e);
             toast.show(e.message);
         } finally {
+            this.checking = false;
         }
     }
 
@@ -539,7 +552,15 @@ class Swap extends Component {
             return;
         }
         this.clearAutoCheckBuyInterval();
-        this.batchBuy();
+        this.batchBuy(true);
+    }
+
+    handleGasMultiChange(event) {
+        let value = this.state.gasMulti;
+        if (event.target.validity.valid) {
+            value = event.target.value;
+        }
+        this.setState({ gasMulti: value });
     }
 
     //批量获取余额
@@ -618,11 +639,15 @@ class Swap extends Component {
                 <div className='Contract Remark'>
                     授权钱包数量：{this.state.approveAccount}
                 </div>
+                <div className='Tip'>自动检测购买gas倍数</div>
+                <div className='flex TokenAddress'>
+                    <input className="ModuleBg" type="text" value={this.state.gasMulti} onChange={this.handleGasMultiChange.bind(this)} pattern="[0-9.]*" placeholder='输入自动检测购买gas倍数' />
+                </div>
                 <div className="button2 ModuleTop" onClick={this.autoCheckThenBuy.bind(this)}>自动检测并购买</div>
                 {this.state.auto && <div className='Contract Remark' onClick={this.clearAutoCheckBuyInterval.bind(this)}>
                     自动检测购买中...
                 </div>}
-                <div className="button ModuleTop mb30" onClick={this.batchBuy.bind(this)}>手动批量购买</div>
+                <div className="button ModuleTop mb30" onClick={this.batchBuy.bind(this, false)}>手动批量购买</div>
                 {
                     this.state.wallets.map((item, index) => {
                         return <div key={index} className="mt10 Item flex">

@@ -240,3 +240,11 @@
     opacity: 1;
     border: 1px solid #00CB82;
 }
+
+.Token .Tip {
+    width: 93.6vw;
+    display: flex;
+    font-size: 12px;
+    font-weight: 400;
+    color: #19006480;
+}
