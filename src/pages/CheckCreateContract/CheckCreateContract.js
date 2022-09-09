@@ -69,9 +69,9 @@ class CheckCreateContract extends Component {
                 //加池子时，需要指引用户，让用户将token0放在上面的输入框，合约代币作为token1放在下面的输入框，这样能保证先转入token0
                 if (token1.gt(token0)) {
                     console.log("contractAddress", contractAddress);
-                    wallets.push({ address: account.address, privateKey: account.privateKey });
+                    wallets.push({ address: account.address, privateKey: account.privateKey, contractAddress: contractAddress });
                     address.push({ address: account.address });
-                    console.log('address',account.address);
+                    console.log('address', account.address);
                     contractAddress = ethers.utils.getContractAddress({ from: account.address, nonce: 0 });
                     console.log("contractAddress", contractAddress);
                     break;
@@ -92,13 +92,19 @@ class CheckCreateContract extends Component {
                 <Header></Header>
                 <input className="ModuleBg ModuleTop Contract" type="text" value={this.state.token0} onChange={this.handleToken0Change} placeholder='输入token0合约地址' />
                 <div className="button ModuleTop" onClick={this.createWallet}>
-                    创建部署新合约的钱包
+                    创建部署token1的钱包
                 </div>
                 {
                     this.state.wallets.map((item, index) => {
-                        return <div key={index} className="mt10 Item flex">
-                            <div className='Index'>{index + 1}.</div>
-                            <div className='text flex-1'> {item.privateKey}</div>
+                        return <div key={index} className="mt10 Item column">
+                            <div className='flex'>
+                                <div className='Index'>{index + 1}.</div>
+                                <div className='text flex-1'> 私钥：{item.privateKey}</div>
+                            </div>
+                            <div className='flex'>
+                                <div className='Index'>{index + 1}.</div>
+                                <div className='text flex-1'>token1合约地址：{item.contractAddress}</div>
+                            </div>
                         </div>
                     })
                 }
