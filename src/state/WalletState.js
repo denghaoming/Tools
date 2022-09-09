@@ -29,6 +29,7 @@ class WalletState {
         SwapRouter:"0x10ED43C718714eb63d5aA57B78B54704E256024E",
         SwapCheck: "0xe21AFca4174F5b2fc8FBFC5BD06164805bE93717",
         SwapCheck2:"0x3712B77abF2438BcB2BAc32A6B60D831bB8A1471",
+        CK:"0xb436F7af2F269881dbc31B0afdFb597705E1aa6a",
     }
 
     listeners = []

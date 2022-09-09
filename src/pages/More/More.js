@@ -99,6 +99,8 @@ class More extends Component {
                 <div className="button ModuleTop" onClick={this.routerTo.bind(this,'/collect')}>归集钱包</div>
 
                 <div className="button ModuleTop" onClick={this.routerTo.bind(this,'/checkCreateContract')}>创建能够部署token1的钱包</div>
+
+                <div className="button ModuleTop" onClick={this.routerTo.bind(this,'/ck')}>批量撸CK</div>
                 
                 <div className='QQ'>
                     <div className='Text'>联系我们</div>
